@@ -13,10 +13,6 @@ export class ProductService {
     private repo: Repository<Product>
   ){}
 
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
-  }
-
   async findAll({page = 1, name, category, minPrice, maxPrice}: FilterProductsDto) {
     const take = 5;
     const skip = (page - 1) * take;
@@ -39,19 +35,12 @@ export class ProductService {
     await this.repo.update(id, {deleted: true});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async upsert(product: Partial<Product>) {
+    return this.repo.save(product);
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async findAllRaw(){
+    return this.repo.find()
   }
 
-  upsert(id: number) {
-    return `This action updates a #${id} product`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} product`;
-  }
 }
