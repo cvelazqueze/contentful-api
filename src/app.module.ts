@@ -11,12 +11,19 @@ import { CronModule } from './cron/cron.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        url: config.get<string>('DATABASE_URL'),
-        autoLoadEntities: true,
-        synchronize: true, // use false in prod
-      }),
+      useFactory: (config: ConfigService) =>{
+        const dbUrl = config.get<string>('DATABASE_URL');
+        if (!dbUrl) {
+          throw new Error('DATABASE_URL not found in environment');
+        }
+
+        return {
+          type: 'postgres',
+          url: dbUrl,
+          autoLoadEntities: true,
+          synchronize: true,
+        };
+      },
     }),
     ProductModule,
     ContentfulModule,
