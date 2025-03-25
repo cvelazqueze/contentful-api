@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductModule } from './product/product.module';
+import { ContentfulModule } from './contentful/contentful.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { ProductModule } from './product/product.module';
       }),
     }),
     ProductModule,
+    ContentfulModule,
+    CronModule,
   ],
 })
 export class AppModule {}

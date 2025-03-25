@@ -35,11 +35,19 @@ export class ProductService {
     return { items, total, page, pageSize: take };
   }
 
+  async softDelete(id: string){
+    await this.repo.update(id, {deleted: true});
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} product`;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
+    return `This action updates a #${id} product`;
+  }
+
+  upsert(id: number) {
     return `This action updates a #${id} product`;
   }
 
