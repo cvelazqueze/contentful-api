@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: contentful
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - '3000:3000'
+    environment:
+      CONTENTFUL_SPACE_ID: ${CONTENTFUL_SPACE_ID}
+      CONTENTFUL_ACCESS_TOKEN: ${CONTENTFUL_ACCESS_TOKEN}
+      CONTENTFUL_ENVIRONMENT: ${CONTENTFUL_ENVIRONMENT}
+      CONTENTFUL_CONTENT_TYPE: ${CONTENTFUL_CONTENT_TYPE}
+      DATABASE_URL: postgres://postgres:postgres@db:5432/contentful
+    volumes:
+      - .:/usr/src/app
+    command: npm run start:dev
+
+volumes:
+  pgdata:
