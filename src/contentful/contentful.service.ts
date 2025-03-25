@@ -23,13 +23,22 @@ export class ContentfulService {
     const res = await axios.get(url);
 
     const entries = res.data.items;
-    const products = entries.map(item => ({
-      id: item.sys.id,
-      name: item.fields.name?.['en-US'] ?? 'Unnamed',
-      category: item.fields.category?.['en-US'] ?? 'Uncategorized',
-      price: item.fields.price?.['en-US'] ?? null,
-      deleted: false,
-    }))
+    const products = entries.map(item => {
+      const fields = item.fields;
+
+      return {
+        sku: fields.sku,
+        name: fields.name,
+        brand: fields.brand,
+        model: fields.model,
+        category: fields.category,
+        color: fields.color,
+        price: fields.price,
+        currency: fields.currency,
+        stock: fields.stock,
+        deleted: false,
+      }
+    })
 
     for (const product of products) {
       await this.productService.upsert(product);
