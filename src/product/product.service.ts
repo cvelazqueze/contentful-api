@@ -19,7 +19,7 @@ export class ProductService {
 
     const query = this.repo
       .createQueryBuilder('product')
-      .where('prduct.deleted = false');
+      .where('product.deleted = false');
 
     if (name) query.andWhere('product.name ILIKE :name', { name: `%${name}%` });
     if (category) query.andWhere('product.category ILIKE :category', { category: `%${category}%` });
