@@ -15,6 +15,14 @@ export class FilterProductsDto {
   @IsString()
   category?: string;
 
+  @IsOptional()
+  @IsString()
+  brand?: string;
+
+  @IsOptional()
+  @IsString()
+  color?: string;
+
   @Type(() => Number)
   @IsOptional()
   minPrice?: number;

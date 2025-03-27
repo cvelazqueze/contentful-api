@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { Repository } from 'typeorm';
@@ -13,22 +11,41 @@ export class ProductService {
     private repo: Repository<Product>
   ){}
 
-  async findAll({page = 1, name, category, minPrice, maxPrice}: FilterProductsDto) {
+  async findAll(filters: FilterProductsDto) {
     const take = 5;
-    const skip = (page - 1) * take;
+    const skip = ((filters.page ?? 1) - 1) * take;
 
     const query = this.repo
       .createQueryBuilder('product')
       .where('product.deleted = false');
 
-    if (name) query.andWhere('product.name ILIKE :name', { name: `%${name}%` });
-    if (category) query.andWhere('product.category ILIKE :category', { category: `%${category}%` });
-    if (minPrice) query.andWhere('product.price >= :minPrice', { minPrice });
-    if (maxPrice) query.andWhere('product.price <= :maxPrice', { maxPrice });
+      if (filters.name)
+      query.andWhere('product.name ILIKE :name', { name: `%${filters.name}%` });
+  
+      if (filters.category)
+        query.andWhere('product.category ILIKE :category', { category: `%${filters.category}%` });
+    
+      if (filters.brand)
+        query.andWhere('product.brand ILIKE :brand', { brand: `%${filters.brand}%` });
+    
+      if (filters.color)
+        query.andWhere('product.color ILIKE :color', { color: `%${filters.color}%` });
+    
+      if (filters.minPrice !== undefined)
+        query.andWhere('product.price >= :minPrice', { minPrice: filters.minPrice });
+    
+      if (filters.maxPrice !== undefined)
+        query.andWhere('product.price <= :maxPrice', { maxPrice: filters.maxPrice });
+    
+      const [items, total] = await query.skip(skip).take(take).getManyAndCount();
 
-    const [items, total] = await query.skip(skip).take(take).getManyAndCount();
-
-    return { items, total, page, pageSize: take };
+    return {
+      items,
+      total,
+      page: filters.page ?? 1,
+      pageSize: take,
+      totalPages: Math.ceil(total/take),
+    };
   }
 
   async softDelete(id: string){
